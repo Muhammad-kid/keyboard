@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Urdu Keyboard</string>
+    <string name="keyboard_name">اردو کی بورڈ</string>
+    <string name="settings_title">Keyboard Settings</string>
+    
+    <!-- Main Activity -->
+    <string name="enable_keyboard_title">Enable Urdu Keyboard</string>
+    <string name="enable_keyboard_description">Go to Settings > Languages &amp; Input > Virtual Keyboard to enable this keyboard</string>
+    <string name="set_as_default_title">Set as Default</string>
+    <string name="set_as_default_description">Make Urdu Keyboard your default input method</string>
+    <string name="open_settings">Open Settings</string>
+    
+    <!-- Settings -->
+    <string name="keyboard_color_title">Keyboard Color</string>
+    <string name="keyboard_color_summary">Choose your keyboard color</string>
+    <string name="vibration_title">Vibration</string>
+    <string name="vibration_summary">Vibrate on key press</string>
+    <string name="sound_title">Key Sound</string>
+    <string name="sound_summary">Play sound on key press</string>
+    <string name="theme_title">Keyboard Theme</string>
+    <string name="theme_summary">Choose keyboard appearance</string>
+    
+    <!-- Color Picker -->
+    <string name="color_picker_title">Choose Color</string>
+    <string name="color_picker_ok">OK</string>
+    <string name="color_picker_cancel">Cancel</string>
+    <string name="color_picker_reset">Reset to Default</string>
+    
+    <!-- Keyboard Keys -->
+    <string name="key_space">Space</string>
+    <string name="key_enter">Enter</string>
+    <string name="key_delete">Delete</string>
+    <string name="key_shift">Shift</string>
+    <string name="key_123">123</string>
+    <string name="key_abc">ABC</string>
+    <string name="key_emoji">😀</string>
+    <string name="key_language_switch">اردو/Eng</string>
+    
+    <!-- Urdu Keys -->
+    <string name="urdu_key_alif">ا</string>
+    <string name="urdu_key_bay">ب</string>
+    <string name="urdu_key_pay">پ</string>
+    <string name="urdu_key_tay">ت</string>
+    <string name="urdu_key_ttay">ٹ</string>
+    <string name="urdu_key_say">ث</string>
+    <string name="urdu_key_jeem">ج</string>
+    <string name="urdu_key_chay">چ</string>
+    <string name="urdu_key_hay">ح</string>
+    <string name="urdu_key_khay">خ</string>
+    <string name="urdu_key_dal">د</string>
+    <string name="urdu_key_ddal">ڈ</string>
+    <string name="urdu_key_zaal">ذ</string>
+    <string name="urdu_key_ray">ر</string>
+    <string name="urdu_key_rray">ڑ</string>
+    <string name="urdu_key_zay">ز</string>
+    <string name="urdu_key_zhay">ژ</string>
+    <string name="urdu_key_seen">س</string>
+    <string name="urdu_key_sheen">ش</string>
+    <string name="urdu_key_swad">ص</string>
+    <string name="urdu_key_zwad">ض</string>
+    <string name="urdu_key_toay">ط</string>
+    <string name="urdu_key_zoay">ظ</string>
+    <string name="urdu_key_ain">ع</string>
+    <string name="urdu_key_ghain">غ</string>
+    <string name="urdu_key_fay">ف</string>
+    <string name="urdu_key_qaaf">ق</string>
+    <string name="urdu_key_kaaf">ک</string>
+    <string name="urdu_key_gaaf">گ</string>
+    <string name="urdu_key_laam">ل</string>
+    <string name="urdu_key_meem">م</string>
+    <string name="urdu_key_noon">ن</string>
+    <string name="urdu_key_noon_ghunna">ں</string>
+    <string name="urdu_key_waao">و</string>
+    <string name="urdu_key_hay_gol">ہ</string>
+    <string name="urdu_key_hay_do_chasmi">ھ</string>
+    <string name="urdu_key_yay">ی</string>
+    <string name="urdu_key_yay_baree">ے</string>
+    
+    <!-- Error Messages -->
+    <string name="error_keyboard_not_enabled">Keyboard is not enabled in system settings</string>
+    <string name="error_keyboard_not_selected">Keyboard is not selected as default input method</string>
+</resources>

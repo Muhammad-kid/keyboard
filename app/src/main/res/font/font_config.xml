@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Open Sans for English -->
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/open_sans" />
+        
+    <!-- Nastaleq for Urdu -->
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/nastaleq" />
+</font-family>
