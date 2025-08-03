@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/keyboard_background_default"
+    android:padding="4dp">
+
+    <!-- First Row: Numbers and Symbols -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <Button android:id="@+id/key_1" style="@style/KeyButton" android:layout_weight="1" android:text="1" />
+        <Button android:id="@+id/key_2" style="@style/KeyButton" android:layout_weight="1" android:text="2" />
+        <Button android:id="@+id/key_3" style="@style/KeyButton" android:layout_weight="1" android:text="3" />
+        <Button android:id="@+id/key_4" style="@style/KeyButton" android:layout_weight="1" android:text="4" />
+        <Button android:id="@+id/key_5" style="@style/KeyButton" android:layout_weight="1" android:text="5" />
+        <Button android:id="@+id/key_6" style="@style/KeyButton" android:layout_weight="1" android:text="6" />
+        <Button android:id="@+id/key_7" style="@style/KeyButton" android:layout_weight="1" android:text="7" />
+        <Button android:id="@+id/key_8" style="@style/KeyButton" android:layout_weight="1" android:text="8" />
+        <Button android:id="@+id/key_9" style="@style/KeyButton" android:layout_weight="1" android:text="9" />
+        <Button android:id="@+id/key_0" style="@style/KeyButton" android:layout_weight="1" android:text="0" />
+    </LinearLayout>
+
+    <!-- Second Row: First Urdu Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <Button android:id="@+id/key_urdu_qaf" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_qaaf" />
+        <Button android:id="@+id/key_urdu_waao" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_waao" />
+        <Button android:id="@+id/key_urdu_ayn" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_ain" />
+        <Button android:id="@+id/key_urdu_ray" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_ray" />
+        <Button android:id="@+id/key_urdu_tay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_tay" />
+        <Button android:id="@+id/key_urdu_yay_baree" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_yay_baree" />
+        <Button android:id="@+id/key_urdu_waao_hamza" style="@style/UrduKeyButton" android:layout_weight="1" android:text="ؤ" />
+        <Button android:id="@+id/key_urdu_yay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_yay" />
+        <Button android:id="@+id/key_urdu_alif_hamza" style="@style/UrduKeyButton" android:layout_weight="1" android:text="ء" />
+        <Button android:id="@+id/key_urdu_pay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_pay" />
+    </LinearLayout>
+
+    <!-- Third Row: Second Urdu Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <Button android:id="@+id/key_urdu_alif" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_alif" />
+        <Button android:id="@+id/key_urdu_seen" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_seen" />
+        <Button android:id="@+id/key_urdu_dal" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_dal" />
+        <Button android:id="@+id/key_urdu_fay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_fay" />
+        <Button android:id="@+id/key_urdu_gaaf" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_gaaf" />
+        <Button android:id="@+id/key_urdu_hay_gol" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_hay_gol" />
+        <Button android:id="@+id/key_urdu_jeem" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_jeem" />
+        <Button android:id="@+id/key_urdu_kaaf" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_kaaf" />
+        <Button android:id="@+id/key_urdu_laam" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_laam" />
+    </LinearLayout>
+
+    <!-- Fourth Row: Third Urdu Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <Button android:id="@+id/key_shift" style="@style/SpecialKeyButton" android:layout_weight="1.5" android:text="@string/key_shift" />
+        <Button android:id="@+id/key_urdu_zay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_zay" />
+        <Button android:id="@+id/key_urdu_khay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_khay" />
+        <Button android:id="@+id/key_urdu_chay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_chay" />
+        <Button android:id="@+id/key_urdu_waao" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_waao" />
+        <Button android:id="@+id/key_urdu_bay" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_bay" />
+        <Button android:id="@+id/key_urdu_noon" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_noon" />
+        <Button android:id="@+id/key_urdu_meem" style="@style/UrduKeyButton" android:layout_weight="1" android:text="@string/urdu_key_meem" />
+        <Button android:id="@+id/key_backspace" style="@style/SpecialKeyButton" android:layout_weight="1.5" android:text="⌫" />
+    </LinearLayout>
+
+    <!-- Fifth Row: Control Keys -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/key_numbers" style="@style/SpecialKeyButton" android:layout_weight="1" android:text="@string/key_123" />
+        <Button android:id="@+id/key_emoji" style="@style/SpecialKeyButton" android:layout_weight="1" android:text="@string/key_emoji" android:background="@drawable/emoji_key_background" />
+        <Button android:id="@+id/key_language" style="@style/SpecialKeyButton" android:layout_weight="1" android:text="@string/key_language_switch" />
+        <Button android:id="@+id/key_space" style="@style/SpecialKeyButton" android:layout_weight="4" android:text="@string/key_space" />
+        <Button android:id="@+id/key_enter" style="@style/SpecialKeyButton" android:layout_weight="1.5" android:text="@string/key_enter" />
+    </LinearLayout>
+
+</LinearLayout>
