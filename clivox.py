@@ -32,13 +32,12 @@ else:
 TOOLS_DIR = os.path.join(APP_DIR, "tools")
 
 APP_NAME = "Clivox"
-APP_VERSION = "2.1.0"
+APP_VERSION = "2.2.0"
 
 IS_WINDOWS = platform.system() == "Windows"
 
 # Theme colors (dark blue/black, no green)
 COLOR_BG = "#070B12"         # near-black
-COLOR_BG_CANVAS = "#050810"   # base background for animation
 COLOR_CARD = "#0B1524"        # dark blue card
 COLOR_ACCENT = "#2F67F6"      # calm blue accent
 COLOR_ACCENT_HOVER = "#3B82F6"
@@ -89,15 +88,16 @@ class ClivoxApp:
 
         self.root = ctk.CTk()
         self.root.title(f"{APP_NAME} v{APP_VERSION}")
-        self.root.geometry("960x600")
-        self.root.minsize(860, 520)
+        self.root.geometry("920x560")
+        self.root.minsize(820, 480)
         self.root.configure(fg_color=COLOR_BG)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
-        # Window icon from icon.png
+        # Window icon from icon.png (remove default box icon)
         try:
             icon_path = os.path.join(APP_DIR, "icon.png")
             self._icon_img = tk.PhotoImage(file=icon_path)
+            # Set icon for window and taskbar where supported
             self.root.iconphoto(True, self._icon_img)
         except Exception:
             pass
@@ -113,83 +113,85 @@ class ClivoxApp:
 
         # Layout
         self._build_layout()
-        self._start_bg_animation()
+        self._start_card_animation()
 
     # ----------------------
-    # Layout
+    # Layout (animated card background)
     # ----------------------
     def _build_layout(self) -> None:
-        # Animated background layer
-        self.bg_canvas = tk.Canvas(self.root, highlightthickness=0, bd=0, bg=COLOR_BG_CANVAS)
-        self.bg_canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self._gradient_phase = 0
-
-        # Centered container
+        # Outer padding wrapper
         wrapper = ctk.CTkFrame(self.root, fg_color="transparent")
         wrapper.pack(fill="both", expand=True, padx=24, pady=24)
         wrapper.grid_columnconfigure(0, weight=1)
         wrapper.grid_rowconfigure(0, weight=1)
 
-        # Single card with all controls
-        card = ctk.CTkFrame(wrapper, fg_color=COLOR_CARD, corner_radius=16)
-        card.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
+        # Card container
+        self.card = ctk.CTkFrame(wrapper, fg_color=COLOR_CARD, corner_radius=18)
+        self.card.grid(row=0, column=0, sticky="nsew")
+        self.card.grid_columnconfigure(0, weight=1)
+
+        # Animated canvas inside the card
+        self.card_canvas = tk.Canvas(self.card, highlightthickness=0, bd=0, bg=COLOR_CARD)
+        self.card_canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
+        self._card_phase = 0
+
+        # Foreground content on top of canvas
+        self.content = ctk.CTkFrame(self.card, fg_color="transparent")
+        self.content.pack(fill="both", expand=True)
 
         # Header
-        header = ctk.CTkFrame(card, fg_color="transparent")
+        header = ctk.CTkFrame(self.content, fg_color="transparent")
         header.pack(fill="x", padx=20, pady=(18, 10))
-        ctk.CTkLabel(header, text=APP_NAME, text_color=COLOR_TEXT, font=ctk.CTkFont(size=24, weight="bold")).pack(side="left")
-        ctk.CTkLabel(header, text=f"v{APP_VERSION}", text_color=COLOR_SUBTLE, font=ctk.CTkFont(size=13)).pack(side="left", padx=(8, 0))
+        ctk.CTkLabel(header, text=APP_NAME, text_color=COLOR_TEXT, font=ctk.CTkFont(size=22, weight="bold")).pack(side="left")
+        ctk.CTkLabel(header, text=f"v{APP_VERSION}", text_color=COLOR_SUBTLE, font=ctk.CTkFont(size=12)).pack(side="left", padx=(8, 0))
 
         tools_txt = "All tools ready" if not MISSING_TOOLS else f"Missing: {', '.join(MISSING_TOOLS)}"
         ctk.CTkLabel(header, text=tools_txt, text_color=(COLOR_TEXT if not MISSING_TOOLS else "#C2C7D0"), font=ctk.CTkFont(size=12)).pack(side="right")
 
-        # Body form
-        body = ctk.CTkFrame(card, fg_color="transparent")
-        body.pack(fill="x", padx=20, pady=6)
+        # Body
+        body = ctk.CTkFrame(self.content, fg_color="transparent")
+        body.pack(fill="x", padx=20, pady=(6, 6))
 
         # URL
         ctk.CTkLabel(body, text="Video URL", text_color=COLOR_SUBTLE).pack(anchor="w", pady=(4, 2))
-        url_row = ctk.CTkFrame(body, fg_color="transparent")
-        url_row.pack(fill="x")
-        self.url_entry = ctk.CTkEntry(url_row, textvariable=self.url_var, height=42, fg_color="#0A1422", border_color=COLOR_ACCENT, text_color=COLOR_TEXT, placeholder_text="Paste video URL...")
-        self.url_entry.pack(side="left", fill="x", expand=True)
-        ctk.CTkButton(url_row, text="Browse Save Folder", width=170, height=42, fg_color=COLOR_ACCENT, hover_color=COLOR_ACCENT_HOVER, text_color="#FFFFFF", command=self._browse_dir).pack(side="left", padx=(10, 0))
+        self.url_entry = ctk.CTkEntry(body, textvariable=self.url_var, height=42, fg_color="#0A1422", border_color=COLOR_ACCENT, text_color=COLOR_TEXT, placeholder_text="Paste video URL...")
+        self.url_entry.pack(fill="x")
 
-        # Save path
+        # Save path row (Browse button moved here)
         ctk.CTkLabel(body, text="Save To", text_color=COLOR_SUBTLE).pack(anchor="w", pady=(12, 2))
-        self.path_entry = ctk.CTkEntry(body, textvariable=self.path_var, height=42, fg_color="#0A1422", border_color=COLOR_ACCENT, text_color=COLOR_TEXT)
-        self.path_entry.pack(fill="x")
+        save_row = ctk.CTkFrame(body, fg_color="transparent")
+        save_row.pack(fill="x")
+        self.path_entry = ctk.CTkEntry(save_row, textvariable=self.path_var, height=42, fg_color="#0A1422", border_color=COLOR_ACCENT, text_color=COLOR_TEXT)
+        self.path_entry.pack(side="left", fill="x", expand=True)
+        ctk.CTkButton(save_row, text="Browse", width=120, height=42, fg_color=COLOR_ACCENT, hover_color=COLOR_ACCENT_HOVER, text_color="#FFFFFF", command=self._browse_dir).pack(side="left", padx=(10, 0))
 
         # Options row
-        opts = ctk.CTkFrame(card, fg_color="transparent")
-        opts.pack(fill="x", padx=20, pady=(8, 6))
+        opts = ctk.CTkFrame(self.content, fg_color="transparent")
+        opts.pack(fill="x", padx=20, pady=(10, 6))
         for i in range(4):
             opts.grid_columnconfigure(i, weight=1)
 
-        # Quality
         ctk.CTkLabel(opts, text="Quality", text_color=COLOR_SUBTLE).grid(row=0, column=0, sticky="w", padx=(0, 6))
         self.quality_menu = ctk.CTkOptionMenu(opts, variable=self.quality_var, values=["best", "2160p", "1440p", "1080p", "720p", "480p", "360p", "worst"], fg_color="#0A1422", button_color=COLOR_ACCENT, button_hover_color=COLOR_ACCENT_HOVER, text_color=COLOR_TEXT)
         self.quality_menu.grid(row=1, column=0, sticky="ew", padx=(0, 12))
 
-        # Format
         ctk.CTkLabel(opts, text="Format", text_color=COLOR_SUBTLE).grid(row=0, column=1, sticky="w", padx=(0, 6))
         self.format_menu = ctk.CTkOptionMenu(opts, variable=self.format_var, values=["MP4", "WebM", "MKV", "MP3"], fg_color="#0A1422", button_color=COLOR_ACCENT, button_hover_color=COLOR_ACCENT_HOVER, text_color=COLOR_TEXT)
         self.format_menu.grid(row=1, column=1, sticky="ew", padx=(0, 12))
 
-        # Audio toggles
         self.audio_cb = ctk.CTkCheckBox(opts, text="Audio Only", variable=self.audio_only_var, command=self._on_toggle_audio, fg_color=COLOR_ACCENT, text_color=COLOR_TEXT)
         self.audio_cb.grid(row=1, column=2, sticky="w")
         self.strip_cb = ctk.CTkCheckBox(opts, text="No Audio", variable=self.strip_audio_var, fg_color=COLOR_ACCENT, text_color=COLOR_TEXT)
         self.strip_cb.grid(row=1, column=3, sticky="w")
 
-        # Download action (single button)
-        action = ctk.CTkFrame(card, fg_color="transparent")
-        action.pack(fill="x", padx=20, pady=(8, 16))
-        self.download_btn = ctk.CTkButton(action, text="Download", height=44, fg_color=COLOR_ACCENT, hover_color=COLOR_ACCENT_HOVER, text_color="#FFFFFF", command=self.start_download)
+        # Actions
+        actions = ctk.CTkFrame(self.content, fg_color="transparent")
+        actions.pack(fill="x", padx=20, pady=(8, 16))
+        self.download_btn = ctk.CTkButton(actions, text="Download", height=44, fg_color=COLOR_ACCENT, hover_color=COLOR_ACCENT_HOVER, text_color="#FFFFFF", command=self.start_download)
         self.download_btn.pack(side="right")
 
         # Status
-        status = ctk.CTkFrame(card, fg_color="transparent")
+        status = ctk.CTkFrame(self.content, fg_color="transparent")
         status.pack(fill="x", padx=20, pady=(0, 18))
         self.progress_label = ctk.CTkLabel(status, text="Ready", anchor="w", text_color=COLOR_TEXT)
         self.progress_label.pack(fill="x")
@@ -234,7 +236,6 @@ class ClivoxApp:
             messagebox.showinfo("Info", "A download is already in progress.")
             return
 
-        # Disable button while downloading
         self.download_btn.configure(state="disabled", text="Downloading…")
         self.progress_bar.set(0)
         self.progress_label.configure(text="Starting…")
@@ -331,40 +332,53 @@ class ClivoxApp:
             self.root.after(0, self.download_btn.configure, {"state": "normal", "text": "Download"})
 
     # ----------------------
-    # Background Animation (blue hues)
+    # Card Background Animation (subtle, not global)
     # ----------------------
-    def _start_bg_animation(self) -> None:
-        self._animate_background()
+    def _start_card_animation(self) -> None:
+        self._animate_card_background()
 
-    def _animate_background(self) -> None:
-        w = self.bg_canvas.winfo_width() or self.root.winfo_width()
-        h = self.bg_canvas.winfo_height() or self.root.winfo_height()
-        self.bg_canvas.delete("all")
+    def _animate_card_background(self) -> None:
+        w = self.card_canvas.winfo_width() or self.card.winfo_width()
+        h = self.card_canvas.winfo_height() or self.card.winfo_height()
+        if w <= 0 or h <= 0:
+            self.root.after(80, self._animate_card_background)
+            return
 
-        steps = 56
-        phase = self._gradient_phase
+        self.card_canvas.delete("all")
+
+        # Horizontal gradient bands that gently drift
+        steps = 42
+        phase = self._card_phase
         for i in range(steps):
             t = ((i + phase) % steps) / steps
-            # various blue shades
-            r = int(7 + 10 * (1 - t))
-            g = int(20 + 50 * t)
-            b = int(40 + 110 * (1 - t))
+            # subtle blue shades
+            r = int(11 + 8 * (1 - t))
+            g = int(21 + 28 * t)
+            b = int(36 + 60 * (1 - t))
             color = f"#{r:02x}{g:02x}{b:02x}"
-            x0 = i * w / steps
-            x1 = (i + 1) * w / steps + 1
-            self.bg_canvas.create_rectangle(x0, 0, x1, h, fill=color, outline="")
+            y0 = i * h / steps
+            y1 = (i + 1) * h / steps + 1
+            self.card_canvas.create_rectangle(0, y0, w, y1, fill=color, outline="")
 
-        # subtle moving vignettes
-        for j in range(2):
-            t = (phase / 40.0 + j * 0.5) % 1.0
-            cx = int(w * (0.15 + 0.7 * t))
-            cy = int(h * (0.25 + 0.5 * (1 - t)))
-            radius = int(160 + 60 * (1 - t))
-            glow = f"#{int(10+12*(1-t)):02x}{int(30+50*t):02x}{int(70+80*(1-t)):02x}"
-            self.bg_canvas.create_oval(cx - radius, cy - radius, cx + radius, cy + radius, fill=glow, outline="")
+        # Soft overlay waves (polylines) to avoid circles/boxes look
+        wave_count = 2
+        for k in range(wave_count):
+            t = (phase / 35.0 + k * 0.33) % 1.0
+            y = int(h * (0.2 + 0.6 * t))
+            shade = f"#{int(18+12*(1-t)):02x}{int(40+30*t):02x}{int(80+40*(1-t)):02x}"
+            self.card_canvas.create_polygon(
+                -50, y - 30,
+                int(w * 0.3), y - 10,
+                int(w * 0.6), y + 10,
+                w + 50, y + 30,
+                w + 50, y + 60,
+                -50, y + 40,
+                fill=shade,
+                outline="",
+            )
 
-        self._gradient_phase = (self._gradient_phase + 1) % steps
-        self.root.after(100, self._animate_background)
+        self._card_phase = (self._card_phase + 1) % steps
+        self.root.after(100, self._animate_card_background)
 
     # ----------------------
     # Close
