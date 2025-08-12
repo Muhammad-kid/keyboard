@@ -32,12 +32,12 @@ else:
 TOOLS_DIR = os.path.join(APP_DIR, "tools")
 
 APP_NAME = "Clivox"
-APP_VERSION = "2.2.0"
+APP_VERSION = "2.3.0"
 
 IS_WINDOWS = platform.system() == "Windows"
 
 # Theme colors (dark blue/black, no green)
-COLOR_BG = "#070B12"         # near-black
+COLOR_BG = "#06090F"         # near-black
 COLOR_CARD = "#0B1524"        # dark blue card
 COLOR_ACCENT = "#2F67F6"      # calm blue accent
 COLOR_ACCENT_HOVER = "#3B82F6"
@@ -93,11 +93,10 @@ class ClivoxApp:
         self.root.configure(fg_color=COLOR_BG)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
-        # Window icon from icon.png (remove default box icon)
+        # Window icon from icon.png (no default box icon)
         try:
             icon_path = os.path.join(APP_DIR, "icon.png")
             self._icon_img = tk.PhotoImage(file=icon_path)
-            # Set icon for window and taskbar where supported
             self.root.iconphoto(True, self._icon_img)
         except Exception:
             pass
@@ -113,34 +112,32 @@ class ClivoxApp:
 
         # Layout
         self._build_layout()
-        self._start_card_animation()
+        self._start_bg_animation()
 
     # ----------------------
-    # Layout (animated card background)
+    # Layout (centered, constrained card)
     # ----------------------
     def _build_layout(self) -> None:
-        # Outer padding wrapper
-        wrapper = ctk.CTkFrame(self.root, fg_color="transparent")
-        wrapper.pack(fill="both", expand=True, padx=24, pady=24)
-        wrapper.grid_columnconfigure(0, weight=1)
-        wrapper.grid_rowconfigure(0, weight=1)
+        # Global animated background
+        self.bg_canvas = tk.Canvas(self.root, highlightthickness=0, bd=0, bg=COLOR_BG)
+        self.bg_canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
+        self._bg_phase = 0
 
-        # Card container
-        self.card = ctk.CTkFrame(wrapper, fg_color=COLOR_CARD, corner_radius=18)
-        self.card.grid(row=0, column=0, sticky="nsew")
-        self.card.grid_columnconfigure(0, weight=1)
+        # Center container to keep card from becoming massive
+        center = ctk.CTkFrame(self.root, fg_color="transparent")
+        center.pack(fill="both", expand=True)
 
-        # Animated canvas inside the card
-        self.card_canvas = tk.Canvas(self.card, highlightthickness=0, bd=0, bg=COLOR_CARD)
-        self.card_canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self._card_phase = 0
+        # Card with fixed width, centered
+        self.card = ctk.CTkFrame(center, fg_color=COLOR_CARD, corner_radius=18, width=720)
+        self.card.pack(padx=24, pady=24)
+        self.card.pack_propagate(False)  # enforce width
 
-        # Foreground content on top of canvas
-        self.content = ctk.CTkFrame(self.card, fg_color="transparent")
-        self.content.pack(fill="both", expand=True)
+        # Foreground content
+        content = ctk.CTkFrame(self.card, fg_color="transparent")
+        content.pack(fill="both", expand=True)
 
         # Header
-        header = ctk.CTkFrame(self.content, fg_color="transparent")
+        header = ctk.CTkFrame(content, fg_color="transparent")
         header.pack(fill="x", padx=20, pady=(18, 10))
         ctk.CTkLabel(header, text=APP_NAME, text_color=COLOR_TEXT, font=ctk.CTkFont(size=22, weight="bold")).pack(side="left")
         ctk.CTkLabel(header, text=f"v{APP_VERSION}", text_color=COLOR_SUBTLE, font=ctk.CTkFont(size=12)).pack(side="left", padx=(8, 0))
@@ -149,7 +146,7 @@ class ClivoxApp:
         ctk.CTkLabel(header, text=tools_txt, text_color=(COLOR_TEXT if not MISSING_TOOLS else "#C2C7D0"), font=ctk.CTkFont(size=12)).pack(side="right")
 
         # Body
-        body = ctk.CTkFrame(self.content, fg_color="transparent")
+        body = ctk.CTkFrame(content, fg_color="transparent")
         body.pack(fill="x", padx=20, pady=(6, 6))
 
         # URL
@@ -157,7 +154,7 @@ class ClivoxApp:
         self.url_entry = ctk.CTkEntry(body, textvariable=self.url_var, height=42, fg_color="#0A1422", border_color=COLOR_ACCENT, text_color=COLOR_TEXT, placeholder_text="Paste video URL...")
         self.url_entry.pack(fill="x")
 
-        # Save path row (Browse button moved here)
+        # Save path row (Browse button here)
         ctk.CTkLabel(body, text="Save To", text_color=COLOR_SUBTLE).pack(anchor="w", pady=(12, 2))
         save_row = ctk.CTkFrame(body, fg_color="transparent")
         save_row.pack(fill="x")
@@ -166,7 +163,7 @@ class ClivoxApp:
         ctk.CTkButton(save_row, text="Browse", width=120, height=42, fg_color=COLOR_ACCENT, hover_color=COLOR_ACCENT_HOVER, text_color="#FFFFFF", command=self._browse_dir).pack(side="left", padx=(10, 0))
 
         # Options row
-        opts = ctk.CTkFrame(self.content, fg_color="transparent")
+        opts = ctk.CTkFrame(content, fg_color="transparent")
         opts.pack(fill="x", padx=20, pady=(10, 6))
         for i in range(4):
             opts.grid_columnconfigure(i, weight=1)
@@ -185,13 +182,13 @@ class ClivoxApp:
         self.strip_cb.grid(row=1, column=3, sticky="w")
 
         # Actions
-        actions = ctk.CTkFrame(self.content, fg_color="transparent")
+        actions = ctk.CTkFrame(content, fg_color="transparent")
         actions.pack(fill="x", padx=20, pady=(8, 16))
         self.download_btn = ctk.CTkButton(actions, text="Download", height=44, fg_color=COLOR_ACCENT, hover_color=COLOR_ACCENT_HOVER, text_color="#FFFFFF", command=self.start_download)
         self.download_btn.pack(side="right")
 
         # Status
-        status = ctk.CTkFrame(self.content, fg_color="transparent")
+        status = ctk.CTkFrame(content, fg_color="transparent")
         status.pack(fill="x", padx=20, pady=(0, 18))
         self.progress_label = ctk.CTkLabel(status, text="Ready", anchor="w", text_color=COLOR_TEXT)
         self.progress_label.pack(fill="x")
@@ -332,53 +329,49 @@ class ClivoxApp:
             self.root.after(0, self.download_btn.configure, {"state": "normal", "text": "Download"})
 
     # ----------------------
-    # Card Background Animation (subtle, not global)
+    # Background Animation (smooth horizontal gradient, dark blue/black)
     # ----------------------
-    def _start_card_animation(self) -> None:
-        self._animate_card_background()
+    def _start_bg_animation(self) -> None:
+        self._animate_background()
 
-    def _animate_card_background(self) -> None:
-        w = self.card_canvas.winfo_width() or self.card.winfo_width()
-        h = self.card_canvas.winfo_height() or self.card.winfo_height()
+    def _animate_background(self) -> None:
+        w = self.bg_canvas.winfo_width() or self.root.winfo_width()
+        h = self.bg_canvas.winfo_height() or self.root.winfo_height()
         if w <= 0 or h <= 0:
-            self.root.after(80, self._animate_card_background)
+            self.root.after(80, self._animate_background)
             return
 
-        self.card_canvas.delete("all")
+        self.bg_canvas.delete("all")
 
-        # Horizontal gradient bands that gently drift
-        steps = 42
-        phase = self._card_phase
+        # Smooth horizontal gradient across width, slowly drifting
+        steps = 96
+        phase = self._bg_phase
         for i in range(steps):
-            t = ((i + phase) % steps) / steps
-            # subtle blue shades
-            r = int(11 + 8 * (1 - t))
-            g = int(21 + 28 * t)
-            b = int(36 + 60 * (1 - t))
+            # horizontal position with drift
+            t = ((i + phase) % steps) / (steps - 1)
+            # Blend from nearly black to deep blue and back
+            # base colors: start ~ #05080D, end ~ #0B1524
+            r = int(5 + (6 * t))
+            g = int(8 + (14 * t))
+            b = int(13 + (25 * t))
             color = f"#{r:02x}{g:02x}{b:02x}"
-            y0 = i * h / steps
-            y1 = (i + 1) * h / steps + 1
-            self.card_canvas.create_rectangle(0, y0, w, y1, fill=color, outline="")
+            x0 = int(i * w / steps)
+            x1 = int((i + 1) * w / steps) + 1
+            self.bg_canvas.create_rectangle(x0, 0, x1, h, fill=color, outline="")
 
-        # Soft overlay waves (polylines) to avoid circles/boxes look
-        wave_count = 2
-        for k in range(wave_count):
-            t = (phase / 35.0 + k * 0.33) % 1.0
-            y = int(h * (0.2 + 0.6 * t))
-            shade = f"#{int(18+12*(1-t)):02x}{int(40+30*t):02x}{int(80+40*(1-t)):02x}"
-            self.card_canvas.create_polygon(
-                -50, y - 30,
-                int(w * 0.3), y - 10,
-                int(w * 0.6), y + 10,
-                w + 50, y + 30,
-                w + 50, y + 60,
-                -50, y + 40,
-                fill=shade,
-                outline="",
-            )
+        # Subtle moving horizontal wave overlay (very low opacity effect via dithering lines)
+        lines = 12
+        for k in range(lines):
+            y = int(h * (0.15 + 0.7 * (k / lines)))
+            shade_factor = 0.4 + 0.6 * ((k + phase / 20) % 1)
+            r = int(8 + 10 * shade_factor)
+            g = int(16 + 20 * shade_factor)
+            b = int(28 + 30 * (1 - shade_factor))
+            shade = f"#{r:02x}{g:02x}{b:02x}"
+            self.bg_canvas.create_line(0, y, w, y, fill=shade, width=1)
 
-        self._card_phase = (self._card_phase + 1) % steps
-        self.root.after(100, self._animate_card_background)
+        self._bg_phase = (self._bg_phase + 1) % steps
+        self.root.after(100, self._animate_background)
 
     # ----------------------
     # Close
